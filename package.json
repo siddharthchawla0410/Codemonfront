@@ -1,0 +1,23 @@
+{
+  "name": "codemonfront",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "web": "yarn workspace web dev",
+    "mobile": "yarn workspace mobile start",
+    "build:web": "yarn workspace web build",
+    "build:packages": "yarn workspaces foreach -p --topological run build",
+    "lint": "yarn workspaces foreach -p run lint",
+    "typecheck": "yarn workspaces foreach -p run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "yarn@4.0.2",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/types": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/utils": "workspace:*",
+    "next": "^15.0.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native-web": "^0.19.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "~19.1.10",
+    "@types/react-dom": "~19.1.10",
+    "typescript": "^5.3.3"
+  }
+}
