@@ -20,16 +20,33 @@ const COMPLEXITY_LEVELS: ComplexityLevel[] = [
   'multithreading',
 ];
 
+const MAX_LANGUAGES = 3;
+
 export default function Home() {
   const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedComplexity, setSelectedComplexity] = useState<ComplexityLevel | null>(null);
 
-  const canContinue = selectedLanguage && selectedComplexity;
+  const canContinue = selectedLanguages.length > 0 && selectedComplexity;
+
+  const handleLanguageToggle = (langId: string) => {
+    setSelectedLanguages((prev) => {
+      if (prev.includes(langId)) {
+        // Remove if already selected
+        return prev.filter((id) => id !== langId);
+      } else if (prev.length < MAX_LANGUAGES) {
+        // Add if under limit
+        return [...prev, langId];
+      }
+      // At limit, don't add
+      return prev;
+    });
+  };
 
   const handleContinue = () => {
     if (canContinue) {
-      router.push(`/browse?language=${selectedLanguage}&complexity=${selectedComplexity}`);
+      const languagesParam = selectedLanguages.join(',');
+      router.push(`/browse?languages=${languagesParam}&complexity=${selectedComplexity}`);
     }
   };
 
@@ -45,30 +62,42 @@ export default function Home() {
       {/* Language Selection */}
       <Card variant="elevated" style={styles.card}>
         <Typography variant="h3" style={styles.sectionTitle}>
-          Select Language
+          Select Languages (up to {MAX_LANGUAGES})
         </Typography>
         <View style={styles.optionsGrid}>
-          {LANGUAGES.map((lang) => (
-            <Pressable
-              key={lang.id}
-              style={[
-                styles.optionButton,
-                selectedLanguage === lang.id && styles.optionButtonSelected,
-              ]}
-              onPress={() => setSelectedLanguage(lang.id)}
-            >
-              <Typography
-                variant="body"
+          {LANGUAGES.map((lang) => {
+            const isSelected = selectedLanguages.includes(lang.id);
+            const isDisabled = !isSelected && selectedLanguages.length >= MAX_LANGUAGES;
+            return (
+              <Pressable
+                key={lang.id}
                 style={[
-                  styles.optionText,
-                  selectedLanguage === lang.id && styles.optionTextSelected,
+                  styles.optionButton,
+                  isSelected && styles.optionButtonSelected,
+                  isDisabled && styles.optionButtonDisabled,
                 ]}
+                onPress={() => handleLanguageToggle(lang.id)}
+                disabled={isDisabled}
               >
-                {lang.name}
-              </Typography>
-            </Pressable>
-          ))}
+                <Typography
+                  variant="body"
+                  style={[
+                    styles.optionText,
+                    isSelected && styles.optionTextSelected,
+                    isDisabled && styles.optionTextDisabled,
+                  ]}
+                >
+                  {lang.name}
+                </Typography>
+              </Pressable>
+            );
+          })}
         </View>
+        {selectedLanguages.length > 0 && (
+          <Typography variant="caption" color="secondary" style={styles.selectionCount}>
+            {selectedLanguages.length} of {MAX_LANGUAGES} selected
+          </Typography>
+        )}
       </Card>
 
       {/* Complexity Selection */}
@@ -152,6 +181,11 @@ const styles = StyleSheet.create({
     borderColor: '#3B82F6',
     backgroundColor: '#EFF6FF',
   },
+  optionButtonDisabled: {
+    borderColor: '#E5E7EB',
+    backgroundColor: '#F3F4F6',
+    opacity: 0.5,
+  },
   optionText: {
     color: '#374151',
     textAlign: 'center',
@@ -160,8 +194,11 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
     fontWeight: '600',
   },
-  selectionSummary: {
-    gap: 8,
+  optionTextDisabled: {
+    color: '#9CA3AF',
+  },
+  selectionCount: {
+    marginTop: 12,
   },
   continueButton: {
     alignSelf: 'flex-start',

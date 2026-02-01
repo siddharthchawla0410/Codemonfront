@@ -22,10 +22,13 @@ const VALID_COMPLEXITIES: ComplexityLevel[] = [
 
 export default function BrowseScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ language: string; complexity: string }>();
+  const params = useLocalSearchParams<{ languages: string; complexity: string }>();
 
-  const language = params.language;
+  const languagesParam = params.languages;
   const complexity = params.complexity as ComplexityLevel;
+
+  // Parse languages from comma-separated string
+  const selectedLanguages = languagesParam ? languagesParam.split(',').filter(Boolean) : [];
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeOperation, setActiveOperation] = useState<string | null>(null);
@@ -33,7 +36,7 @@ export default function BrowseScreen() {
 
   // Validate params
   useEffect(() => {
-    if (!language || !complexity) {
+    if (selectedLanguages.length === 0 || !complexity) {
       router.replace('/');
       return;
     }
@@ -43,11 +46,13 @@ export default function BrowseScreen() {
       return;
     }
 
-    if (!LANGUAGES.find(l => l.id === language)) {
+    // Validate all selected languages
+    const allLanguagesValid = selectedLanguages.every(lang => LANGUAGES.find(l => l.id === lang));
+    if (!allLanguagesValid) {
       router.replace('/');
       return;
     }
-  }, [language, complexity, router]);
+  }, [selectedLanguages, complexity, router]);
 
   // Fetch operations
   useEffect(() => {
@@ -76,9 +81,12 @@ export default function BrowseScreen() {
     onPress: () => setActiveOperation(op.slug),
   }));
 
-  const languageName = LANGUAGES.find(l => l.id === language)?.name || language;
+  // Get language names for display
+  const languageNames = selectedLanguages
+    .map(id => LANGUAGES.find(l => l.id === id)?.name || id)
+    .join(', ');
 
-  if (!language || !complexity) {
+  if (selectedLanguages.length === 0 || !complexity) {
     return null;
   }
 
@@ -86,7 +94,7 @@ export default function BrowseScreen() {
     <>
       <Stack.Screen
         options={{
-          title: languageName,
+          title: languageNames,
           headerLeft: () => (
             <Pressable onPress={() => setIsDrawerOpen(true)} style={styles.menuButton}>
               <MenuIcon color="#fff" />
@@ -97,7 +105,7 @@ export default function BrowseScreen() {
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.content}>
           <Typography variant="h2" style={styles.title}>
-            {languageName}
+            {languageNames}
           </Typography>
           <Typography variant="body" color="secondary" style={styles.subtitle}>
             {formatComplexityLabel(complexity)}

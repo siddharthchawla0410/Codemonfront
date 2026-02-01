@@ -25,14 +25,17 @@ export default function BrowsePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const languageParam = searchParams.get('language');
+  const languagesParam = searchParams.get('languages');
   const complexityParam = searchParams.get('complexity') as ComplexityLevel | null;
 
   const [activeOperation, setActiveOperation] = useState<string | null>(null);
 
+  // Parse languages from comma-separated string
+  const selectedLanguages = languagesParam ? languagesParam.split(',').filter(Boolean) : [];
+
   // Validate params and redirect if invalid
   useEffect(() => {
-    if (!languageParam || !complexityParam) {
+    if (selectedLanguages.length === 0 || !complexityParam) {
       router.push('/');
       return;
     }
@@ -42,18 +45,23 @@ export default function BrowsePage() {
       return;
     }
 
-    if (!LANGUAGES.find(l => l.id === languageParam)) {
+    // Validate all selected languages
+    const allLanguagesValid = selectedLanguages.every(lang => LANGUAGES.find(l => l.id === lang));
+    if (!allLanguagesValid) {
       router.push('/');
       return;
     }
-  }, [languageParam, complexityParam, router]);
+  }, [selectedLanguages, complexityParam, router]);
 
   // Don't render if params are invalid
-  if (!languageParam || !complexityParam || !VALID_COMPLEXITIES.includes(complexityParam)) {
+  if (selectedLanguages.length === 0 || !complexityParam || !VALID_COMPLEXITIES.includes(complexityParam)) {
     return null;
   }
 
-  const languageName = LANGUAGES.find(l => l.id === languageParam)?.name || languageParam;
+  // Get language names for display
+  const languageNames = selectedLanguages
+    .map(id => LANGUAGES.find(l => l.id === id)?.name || id)
+    .join(', ');
 
   return (
     <SidebarLayout
@@ -64,7 +72,7 @@ export default function BrowsePage() {
       <View style={styles.content}>
         <View style={styles.header}>
           <Typography variant="h1" style={styles.title}>
-            {languageName}
+            {languageNames}
           </Typography>
           <Typography variant="body" color="secondary">
             {formatComplexityLabel(complexityParam)}
