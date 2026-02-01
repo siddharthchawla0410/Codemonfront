@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { SidebarLayout } from '@/components/SidebarLayout';
 
 export const metadata: Metadata = {
-  title: 'Codemonfront Web',
-  description: 'Web application built with Next.js',
+  title: 'Codemon',
+  description: 'Compare boilerplate code across programming languages',
 };
 
 export default function RootLayout({
@@ -14,9 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <SidebarLayout>{children}</SidebarLayout>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

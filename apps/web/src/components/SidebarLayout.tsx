@@ -9,13 +9,14 @@ import { fetchOperations, formatComplexityLabel } from '@repo/utils';
 
 interface SidebarLayoutProps {
   children: React.ReactNode;
+  complexity: ComplexityLevel;
+  onOperationSelect?: (operationSlug: string) => void;
+  activeOperation?: string | null;
 }
 
-export function SidebarLayout({ children }: SidebarLayoutProps) {
+export function SidebarLayout({ children, complexity, onOperationSelect, activeOperation }: SidebarLayoutProps) {
   const [isOpen, setIsOpen] = useState(true);
-  const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [operations, setOperations] = useState<Operation[]>([]);
-  const [complexity, setComplexity] = useState<ComplexityLevel>('single_file_single_thread');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,8 +25,9 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       try {
         const data = await fetchOperations(complexity);
         setOperations(data);
-        if (data.length > 0 && !activeItemId) {
-          setActiveItemId(data[0].slug);
+        // Auto-select first operation if none selected
+        if (data.length > 0 && !activeOperation) {
+          onOperationSelect?.(data[0].slug);
         }
       } catch (error) {
         console.error('Failed to fetch operations:', error);
@@ -40,8 +42,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
   const menuItems: SidebarItem[] = operations.map((op) => ({
     id: op.slug,
     label: op.name,
-    icon: <CodeIcon color={activeItemId === op.slug ? '#3B82F6' : undefined} />,
-    onPress: () => setActiveItemId(op.slug),
+    icon: <CodeIcon color={activeOperation === op.slug ? '#3B82F6' : undefined} />,
+    onPress: () => onOperationSelect?.(op.slug),
   }));
 
   return (
@@ -50,7 +52,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
         items={menuItems}
         isOpen={isOpen}
         onToggle={() => setIsOpen(!isOpen)}
-        activeItemId={activeItemId ?? undefined}
+        activeItemId={activeOperation ?? undefined}
         header={
           <Typography variant="h3" style={styles.headerText}>
             {formatComplexityLabel(complexity)}

@@ -1,56 +1,115 @@
 'use client';
 
-import { View, StyleSheet } from 'react-native';
-import { Button, Typography, Card, Input } from '@repo/ui';
-import { capitalize, formatDate } from '@repo/utils';
-import type { User } from '@repo/types';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Typography, Card, Button } from '@repo/ui';
+import { formatComplexityLabel } from '@repo/utils';
+import type { ComplexityLevel } from '@repo/types';
 
-const mockUser: User = {
-  id: '1',
-  email: 'user@example.com',
-  name: 'john doe',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
+const LANGUAGES = [
+  { id: 'python', name: 'Python' },
+  { id: 'javascript', name: 'JavaScript' },
+  { id: 'java', name: 'Java' },
+];
+
+const COMPLEXITY_LEVELS: ComplexityLevel[] = [
+  'single_file_single_thread',
+  'multiple_files_single_thread',
+  'asynchronous',
+  'multithreading',
+];
 
 export default function Home() {
+  const router = useRouter();
+  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+  const [selectedComplexity, setSelectedComplexity] = useState<ComplexityLevel | null>(null);
+
+  const canContinue = selectedLanguage && selectedComplexity;
+
+  const handleContinue = () => {
+    if (canContinue) {
+      router.push(`/browse?language=${selectedLanguage}&complexity=${selectedComplexity}`);
+    }
+  };
+
   return (
     <View style={styles.content}>
-        <Typography variant="h1" style={styles.title}>
-          Welcome to Codemonfront
+      <Typography variant="h1" style={styles.title}>
+        Codemon
+      </Typography>
+      <Typography variant="body" color="secondary" style={styles.subtitle}>
+        Compare boilerplate code across programming languages
+      </Typography>
+
+      {/* Language Selection */}
+      <Card variant="elevated" style={styles.card}>
+        <Typography variant="h3" style={styles.sectionTitle}>
+          Select Language
         </Typography>
-        <Typography variant="body" color="secondary" style={styles.subtitle}>
-          A monorepo with Next.js and React Native
+        <View style={styles.optionsGrid}>
+          {LANGUAGES.map((lang) => (
+            <Pressable
+              key={lang.id}
+              style={[
+                styles.optionButton,
+                selectedLanguage === lang.id && styles.optionButtonSelected,
+              ]}
+              onPress={() => setSelectedLanguage(lang.id)}
+            >
+              <Typography
+                variant="body"
+                style={[
+                  styles.optionText,
+                  selectedLanguage === lang.id && styles.optionTextSelected,
+                ]}
+              >
+                {lang.name}
+              </Typography>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
+
+      {/* Complexity Selection */}
+      <Card variant="elevated" style={styles.card}>
+        <Typography variant="h3" style={styles.sectionTitle}>
+          Select Complexity
         </Typography>
+        <View style={styles.optionsGrid}>
+          {COMPLEXITY_LEVELS.map((complexity) => (
+            <Pressable
+              key={complexity}
+              style={[
+                styles.optionButton,
+                styles.complexityButton,
+                selectedComplexity === complexity && styles.optionButtonSelected,
+              ]}
+              onPress={() => setSelectedComplexity(complexity)}
+            >
+              <Typography
+                variant="body"
+                style={[
+                  styles.optionText,
+                  selectedComplexity === complexity && styles.optionTextSelected,
+                ]}
+              >
+                {formatComplexityLabel(complexity)}
+              </Typography>
+            </Pressable>
+          ))}
+        </View>
+      </Card>
 
-        <Card variant="elevated" style={styles.card}>
-          <Typography variant="h3">Shared Components</Typography>
-          <Typography variant="body" style={styles.cardText}>
-            These components come from @repo/ui and work on both web and mobile.
-          </Typography>
-
-          <Input
-            label="Email"
-            placeholder="Enter your email"
-            keyboardType="email-address"
-          />
-
-          <View style={styles.buttonRow}>
-            <Button title="Primary" variant="primary" />
-            <Button title="Secondary" variant="secondary" />
-            <Button title="Outline" variant="outline" />
-          </View>
-        </Card>
-
-        <Card variant="outlined" style={styles.card}>
-          <Typography variant="h3">Shared Utilities</Typography>
-          <Typography variant="body" style={styles.cardText}>
-            User: {capitalize(mockUser.name)}
-          </Typography>
-          <Typography variant="caption">
-            Created: {formatDate(mockUser.createdAt)}
-          </Typography>
-        </Card>
+      {/* Continue Button */}
+      {canContinue && (
+        <Button
+          title="Continue"
+          variant="primary"
+          onPress={handleContinue}
+          style={styles.continueButton}
+        />
+      )}
     </View>
   );
 }
@@ -70,12 +129,41 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 24,
   },
-  cardText: {
-    marginVertical: 16,
+  sectionTitle: {
+    marginBottom: 16,
   },
-  buttonRow: {
+  optionsGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
-    marginTop: 16,
+  },
+  optionButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    backgroundColor: '#FFFFFF',
+  },
+  complexityButton: {
+    minWidth: 180,
+  },
+  optionButtonSelected: {
+    borderColor: '#3B82F6',
+    backgroundColor: '#EFF6FF',
+  },
+  optionText: {
+    color: '#374151',
+    textAlign: 'center',
+  },
+  optionTextSelected: {
+    color: '#3B82F6',
+    fontWeight: '600',
+  },
+  selectionSummary: {
+    gap: 8,
+  },
+  continueButton: {
+    alignSelf: 'flex-start',
   },
 });
