@@ -8,6 +8,38 @@ export interface User {
   updatedAt: Date;
 }
 
+// Codemon API types
+export type ComplexityLevel =
+  | 'single_file_single_thread'
+  | 'multiple_files_single_thread'
+  | 'asynchronous'
+  | 'multithreading';
+
+export interface Operation {
+  id: number;
+  name: string;
+  slug: string;
+  category: string;
+  description: string;
+  complexity: ComplexityLevel;
+}
+
+export interface Language {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface Snippet {
+  id: number;
+  language_id: number;
+  operation_id: number;
+  method: string;
+  method_title: string;
+  code: string;
+  explanation: string;
+}
+
 // API Response types
 export interface ApiResponse<T> {
   data: T;

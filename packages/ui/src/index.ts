@@ -11,6 +11,7 @@ export {
   SettingsIcon,
   ProfileIcon,
   MenuIcon,
+  CodeIcon,
 } from './Sidebar';
 export { Drawer, type DrawerProps, type DrawerItem } from './Drawer';
 

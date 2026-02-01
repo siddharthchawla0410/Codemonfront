@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import {
   View,
+  ScrollView,
   Pressable,
   Animated,
   StyleSheet,
@@ -97,7 +98,7 @@ export function Drawer({
           {header && <View style={styles.header}>{header}</View>}
 
           {/* Menu Items */}
-          <View style={styles.menuContainer}>
+          <ScrollView style={styles.menuContainer} showsVerticalScrollIndicator={true}>
             {items.map((item) => (
               <Pressable
                 key={item.id}
@@ -123,7 +124,7 @@ export function Drawer({
                 </Typography>
               </Pressable>
             ))}
-          </View>
+          </ScrollView>
 
           {/* Footer */}
           {footer && <View style={styles.footer}>{footer}</View>}

@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View,
+  ScrollView,
   Pressable,
   Animated,
   StyleSheet,
-  Dimensions,
   type ViewStyle,
   type StyleProp,
 } from 'react-native';
@@ -66,7 +66,7 @@ export function Sidebar({
       {header && isOpen && <View style={styles.header}>{header}</View>}
 
       {/* Menu Items */}
-      <View style={styles.menuContainer}>
+      <ScrollView style={styles.menuContainer} showsVerticalScrollIndicator={true}>
         {items.map((item) => (
           <Pressable
             key={item.id}
@@ -92,7 +92,7 @@ export function Sidebar({
             )}
           </Pressable>
         ))}
-      </View>
+      </ScrollView>
 
       {/* Footer */}
       {footer && isOpen && <View style={styles.footer}>{footer}</View>}
@@ -134,6 +134,15 @@ export function MenuIcon({ color = defaultTheme.colors.text }: { color?: string 
       <View style={[iconStyles.menuBar, { backgroundColor: color }]} />
       <View style={[iconStyles.menuBar, { backgroundColor: color }]} />
       <View style={[iconStyles.menuBar, { backgroundColor: color }]} />
+    </View>
+  );
+}
+
+export function CodeIcon({ color = defaultTheme.colors.text }: { color?: string }) {
+  return (
+    <View style={iconStyles.container}>
+      <View style={[iconStyles.codeBracketLeft, { borderColor: color }]} />
+      <View style={[iconStyles.codeBracketRight, { borderColor: color }]} />
     </View>
   );
 }
@@ -193,6 +202,28 @@ const iconStyles = StyleSheet.create({
     height: 8,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
+  },
+  codeBracketLeft: {
+    position: 'absolute',
+    left: 2,
+    width: 6,
+    height: 14,
+    borderLeftWidth: 2,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderTopLeftRadius: 3,
+    borderBottomLeftRadius: 3,
+  },
+  codeBracketRight: {
+    position: 'absolute',
+    right: 2,
+    width: 6,
+    height: 14,
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderTopRightRadius: 3,
+    borderBottomRightRadius: 3,
   },
 });
 

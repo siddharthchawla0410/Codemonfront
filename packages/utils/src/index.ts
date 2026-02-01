@@ -94,3 +94,56 @@ export async function retry<T>(
 
   throw lastError;
 }
+
+// Codemon API utilities
+import type { Operation, Language } from '@repo/types';
+
+const DEFAULT_API_URL = 'https://interweavingly-hexavalent-trent.ngrok-free.dev';
+
+export function getApiBaseUrl(): string {
+  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  return DEFAULT_API_URL;
+}
+
+const defaultHeaders = {
+  'ngrok-skip-browser-warning': 'true',
+  'Content-Type': 'application/json',
+};
+
+export async function fetchOperations(complexity?: string): Promise<Operation[]> {
+  const params = new URLSearchParams();
+  if (complexity) {
+    params.append('complexity', complexity);
+  }
+
+  const url = `${getApiBaseUrl()}/api/operations${params.toString() ? `?${params}` : ''}`;
+  const response = await fetch(url, { headers: defaultHeaders });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch operations: ${response.statusText}`);
+  }
+
+  return response.json() as Promise<Operation[]>;
+}
+
+export async function fetchLanguages(): Promise<Language[]> {
+  const response = await fetch(`${getApiBaseUrl()}/api/languages`, { headers: defaultHeaders });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch languages: ${response.statusText}`);
+  }
+
+  return response.json() as Promise<Language[]>;
+}
+
+export function formatComplexityLabel(complexity: string): string {
+  return complexity
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
