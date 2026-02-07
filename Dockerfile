@@ -20,14 +20,9 @@ FROM node:18-alpine AS builder
 RUN corepack enable && corepack prepare yarn@4.0.2 --activate
 WORKDIR /app
 
+# Copy full source and node_modules from deps
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
-COPY --from=deps /app/packages/types/node_modules ./packages/types/node_modules
-COPY --from=deps /app/packages/ui/node_modules ./packages/ui/node_modules
-COPY --from=deps /app/packages/utils/node_modules ./packages/utils/node_modules
 COPY --from=deps /app/.yarnrc.yml ./.yarnrc.yml
-
-# Copy full source
 COPY . .
 
 # Build shared packages first, then the web app
