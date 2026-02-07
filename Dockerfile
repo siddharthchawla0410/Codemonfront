@@ -13,7 +13,7 @@ COPY packages/types/package.json ./packages/types/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/utils/package.json ./packages/utils/
 
-RUN yarn install --immutable
+RUN yarn install
 
 # Stage 2: Build the application
 FROM node:18-alpine AS builder
