@@ -9,7 +9,7 @@
     "web": "yarn workspace web dev",
     "mobile": "yarn workspace mobile start",
     "build:web": "yarn workspace web build",
-    "build:packages": "yarn workspaces foreach -A -p --topological run build",
+    "build:packages": "yarn workspaces foreach -A -p --topological --exclude web --exclude mobile run build",
     "lint": "yarn workspaces foreach -A -p run lint",
     "typecheck": "yarn workspaces foreach -A -p run typecheck"
   },

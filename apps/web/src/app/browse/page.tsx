@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { View, StyleSheet } from 'react-native';
 import { Typography, Card } from '@repo/ui';
@@ -22,6 +22,14 @@ const LANGUAGES = [
 ];
 
 export default function BrowsePage() {
+  return (
+    <Suspense fallback={null}>
+      <BrowseContent />
+    </Suspense>
+  );
+}
+
+function BrowseContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
