@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: codemonfront-web
+  labels:
+    app: codemonfront-web
+spec:
+  type: LoadBalancer
+  selector:
+    app: codemonfront-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000

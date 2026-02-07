@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codemonfront-web
+  labels:
+    app: codemonfront-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: codemonfront-web
+  template:
+    metadata:
+      labels:
+        app: codemonfront-web
+    spec:
+      containers:
+        - name: codemonfront-web
+          image: gcr.io/PROJECT_ID/codemonfront-web:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
