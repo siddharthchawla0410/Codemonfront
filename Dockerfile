@@ -1,11 +1,11 @@
 # Stage 1: Install dependencies
 FROM node:18-alpine AS deps
 RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare yarn@4.0.2 --activate
 WORKDIR /app
 
 # Copy workspace config and lockfile
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
 
 # Copy all package.json files for workspace resolution
 COPY apps/web/package.json ./apps/web/
@@ -17,6 +17,7 @@ RUN yarn install --immutable
 
 # Stage 2: Build the application
 FROM node:18-alpine AS builder
+RUN corepack enable && corepack prepare yarn@4.0.2 --activate
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -24,7 +25,6 @@ COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=deps /app/packages/types/node_modules ./packages/types/node_modules
 COPY --from=deps /app/packages/ui/node_modules ./packages/ui/node_modules
 COPY --from=deps /app/packages/utils/node_modules ./packages/utils/node_modules
-COPY --from=deps /app/.yarn ./.yarn
 COPY --from=deps /app/.yarnrc.yml ./.yarnrc.yml
 
 # Copy full source

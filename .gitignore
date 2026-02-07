@@ -56,3 +56,6 @@ coverage/
 
 # TypeScript
 *.tsbuildinfo
+
+# Key
+key.json
