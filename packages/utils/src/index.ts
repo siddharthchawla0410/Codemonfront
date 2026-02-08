@@ -98,7 +98,7 @@ export async function retry<T>(
 // Codemon API utilities
 import type { Operation, Language } from '@repo/types';
 
-const DEFAULT_API_URL = 'https://interweavingly-hexavalent-trent.ngrok-free.dev';
+const DEFAULT_API_URL = 'http://35.223.127.154';
 
 export function getApiBaseUrl(): string {
   if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL) {

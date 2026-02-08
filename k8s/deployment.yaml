@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: codemonfront-web
-          image: gcr.io/PROJECT_ID/codemonfront-web:latest
+          image: gcr.io/project-2cf612c4-a322-45ba-b8c/codemonfront-web:latest
           ports:
             - containerPort: 3000
           resources:
