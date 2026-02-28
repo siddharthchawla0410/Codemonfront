@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Drawer, MenuIcon, CodeIcon, Typography, Card } from '@repo/ui';
+import { Drawer, MenuIcon, CodeIcon, Typography, Card, CodeBlock } from '@repo/ui';
 import type { DrawerItem } from '@repo/ui';
-import type { Operation, ComplexityLevel } from '@repo/types';
-import { fetchOperations, formatComplexityLabel } from '@repo/utils';
+import type { Operation, ComplexityLevel, SnippetComparison } from '@repo/types';
+import { fetchOperations, fetchSnippetComparison, formatComplexityLabel } from '@repo/utils';
 
 const LANGUAGES = [
   { id: 'python', name: 'Python' },
@@ -33,6 +33,8 @@ export default function BrowseScreen() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeOperation, setActiveOperation] = useState<string | null>(null);
   const [operations, setOperations] = useState<Operation[]>([]);
+  const [comparison, setComparison] = useState<SnippetComparison | null>(null);
+  const [snippetsLoading, setSnippetsLoading] = useState(false);
 
   // Validate params
   useEffect(() => {
@@ -74,6 +76,37 @@ export default function BrowseScreen() {
     loadOperations();
   }, [complexity]);
 
+  // Fetch snippets when active operation changes
+  useEffect(() => {
+    if (!activeOperation || selectedLanguages.length === 0) {
+      setComparison(null);
+      return;
+    }
+
+    let cancelled = false;
+    async function loadSnippets() {
+      setSnippetsLoading(true);
+      try {
+        const data = await fetchSnippetComparison(selectedLanguages, activeOperation!);
+        if (!cancelled) {
+          setComparison(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch snippets:', error);
+        if (!cancelled) {
+          setComparison(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setSnippetsLoading(false);
+        }
+      }
+    }
+
+    loadSnippets();
+    return () => { cancelled = true; };
+  }, [activeOperation, languagesParam]);
+
   const menuItems: DrawerItem[] = operations.map((op) => ({
     id: op.slug,
     label: op.name,
@@ -112,14 +145,59 @@ export default function BrowseScreen() {
           </Typography>
 
           {activeOperation ? (
-            <Card variant="elevated" style={styles.card}>
+            <View>
               <Typography variant="h3" style={styles.operationTitle}>
                 {activeOperation.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
               </Typography>
-              <Typography variant="body" color="secondary">
-                Select an operation from the menu to view code snippets
-              </Typography>
-            </Card>
+              {comparison?.operation.description ? (
+                <Typography variant="body" color="secondary" style={styles.operationDescription}>
+                  {comparison.operation.description}
+                </Typography>
+              ) : null}
+
+              {snippetsLoading ? (
+                <Card variant="outlined" style={styles.card}>
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="small" color="#3B82F6" />
+                    <Typography variant="body" color="secondary" style={styles.loadingText}>
+                      Loading snippets...
+                    </Typography>
+                  </View>
+                </Card>
+              ) : comparison ? (
+                <View style={styles.snippetsContainer}>
+                  {selectedLanguages.map((langSlug) => {
+                    const snippet = comparison.snippets[langSlug];
+                    const langName = LANGUAGES.find(l => l.id === langSlug)?.name || langSlug;
+
+                    if (!snippet) {
+                      return (
+                        <Card key={langSlug} variant="outlined" style={styles.card}>
+                          <Typography variant="body" color="secondary">
+                            No snippet available for {langName}
+                          </Typography>
+                        </Card>
+                      );
+                    }
+
+                    return (
+                      <CodeBlock
+                        key={langSlug}
+                        code={snippet.code}
+                        language={langName}
+                        explanation={snippet.explanation}
+                      />
+                    );
+                  })}
+                </View>
+              ) : (
+                <Card variant="outlined" style={styles.card}>
+                  <Typography variant="body" color="secondary">
+                    No snippets found for this operation.
+                  </Typography>
+                </Card>
+              )}
+            </View>
           ) : (
             <Card variant="outlined" style={styles.card}>
               <Typography variant="body" color="secondary">
@@ -165,7 +243,23 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   operationTitle: {
-    marginBottom: 12,
+    marginBottom: 4,
+  },
+  operationDescription: {
+    marginBottom: 20,
+  },
+  snippetsContainer: {
+    gap: 20,
+    marginTop: 16,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  loadingText: {
+    marginLeft: 12,
   },
   menuButton: {
     padding: 8,
