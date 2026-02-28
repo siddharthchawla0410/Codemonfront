@@ -96,9 +96,10 @@ export async function retry<T>(
 }
 
 // Codemon API utilities
-import type { Operation, Language } from '@repo/types';
+import type { Operation, Language, SnippetComparison } from '@repo/types';
 
 const DEFAULT_API_URL = 'http://35.223.127.154';
+// const DEFAULT_API_URL = 'http://localhost:8000';
 
 export function getApiBaseUrl(): string {
   if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL) {
@@ -139,6 +140,21 @@ export async function fetchLanguages(): Promise<Language[]> {
   }
 
   return response.json() as Promise<Language[]>;
+}
+
+export async function fetchSnippetComparison(languages: string[], operationSlug: string): Promise<SnippetComparison> {
+  const params = new URLSearchParams();
+  params.append('languages', languages.join(','));
+  params.append('operation', operationSlug);
+
+  const url = `${getApiBaseUrl()}/api/snippets/compare?${params}`;
+  const response = await fetch(url, { headers: defaultHeaders });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch snippet comparison: ${response.statusText}`);
+  }
+
+  return response.json() as Promise<SnippetComparison>;
 }
 
 export function formatComplexityLabel(complexity: string): string {

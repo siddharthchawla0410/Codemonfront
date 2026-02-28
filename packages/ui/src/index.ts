@@ -14,6 +14,7 @@ export {
   CodeIcon,
 } from './Sidebar';
 export { Drawer, type DrawerProps, type DrawerItem } from './Drawer';
+export { CodeBlock, type CodeBlockProps } from './CodeBlock';
 
 // Theme
 export { defaultTheme, darkTheme } from './theme';

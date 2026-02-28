@@ -40,6 +40,11 @@ export interface Snippet {
   explanation: string;
 }
 
+export interface SnippetComparison {
+  operation: Operation;
+  snippets: Record<string, Snippet | null>;
+}
+
 // API Response types
 export interface ApiResponse<T> {
   data: T;
