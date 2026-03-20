@@ -5,7 +5,7 @@ metadata:
   labels:
     app: codemonfront-web
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: codemonfront-web
   ports:
