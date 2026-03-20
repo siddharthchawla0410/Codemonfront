@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Codemon',
+  title: 'Coding Turf',
   description: 'Compare boilerplate code across programming languages',
 };
 

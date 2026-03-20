@@ -53,7 +53,7 @@ export default function Home() {
   return (
     <View style={styles.content}>
       <Typography variant="h1" style={styles.title}>
-        Codemon
+        Coding Turf
       </Typography>
       <Typography variant="body" color="secondary" style={styles.subtitle}>
         Compare boilerplate code across programming languages

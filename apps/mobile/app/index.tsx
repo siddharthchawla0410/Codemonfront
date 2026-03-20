@@ -56,7 +56,7 @@ export default function Home() {
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Typography variant="h1" style={styles.title}>
-          Codemon
+          Coding Turf
         </Typography>
         <Typography variant="body" color="secondary" style={styles.subtitle}>
           Compare boilerplate code across programming languages
