@@ -6,6 +6,7 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import { Typography, Card, Button } from '@repo/ui';
 import { formatComplexityLabel } from '@repo/utils';
 import type { ComplexityLevel } from '@repo/types';
+import AdBanner from '@/components/AdBanner';
 
 const LANGUAGES = [
   { id: 'python', name: 'Python' },
@@ -139,6 +140,9 @@ export default function Home() {
           style={styles.continueButton}
         />
       )}
+
+      {/* Ad Banner */}
+      <AdBanner adSlot="9893954509" />
     </View>
   );
 }
