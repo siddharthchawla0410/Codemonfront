@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: codemonfront
+    env: docker
+    dockerfilePath: ./Dockerfile
+    port: 3000
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://codemonbackend.onrender.com
