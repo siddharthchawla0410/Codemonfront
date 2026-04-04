@@ -34,7 +34,7 @@ FROM node:18-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=10000
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -46,6 +46,6 @@ COPY --from=builder /app/apps/web/public ./apps/web/public
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 10000
 
 CMD ["node", "apps/web/server.js"]
