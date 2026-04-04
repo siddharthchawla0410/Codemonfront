@@ -98,7 +98,8 @@ export async function retry<T>(
 // Codemon API utilities
 import type { Operation, Language, SnippetComparison } from '@repo/types';
 
-const DEFAULT_API_URL = 'https://api.codingturf.in';
+const DEFAULT_API_URL = 'https://codemonbackend.onrender.com';
+// const DEFAULT_API_URL = 'https://api.codingturf.in';
 // const DEFAULT_API_URL = 'http://localhost:8000';
 
 export function getApiBaseUrl(): string {
